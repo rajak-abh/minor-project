@@ -1,0 +1,13 @@
+import { useEffect, useState } from "react";
+import api from "../api";
+
+export default function Certifications() {
+  const [items, setItems] = useState([]); const [form, setForm] = useState({ title: "", issuer: "", issue_date: "", credential_url: "" }); const [error, setError] = useState(""); const [message, setMessage] = useState(""); const [busy, setBusy] = useState(false);
+  useEffect(() => { void api.get("/students/me/certifications").then(setItems).catch((err) => setError(err.message)); }, []);
+  async function add(event) { event.preventDefault(); setError(""); setMessage(""); setBusy(true); try { const item = await api.post("/students/me/certifications", { ...form, issue_date: form.issue_date || null }); setItems((old) => [item, ...old]); setForm({ title: "", issuer: "", issue_date: "", credential_url: "" }); setMessage("Certification saved to your account."); } catch (err) { setError(err.message); } finally { setBusy(false); } }
+  async function remove(id) { try { await api.delete(`/students/me/certifications/${id}`); setItems((old) => old.filter((item) => item.id !== id)); } catch (err) { setError(err.message); } }
+  return <section className="st-page"><header className="st-page-header"><div><h1>Certifications</h1><p>Keep your credentials linked to your profile.</p></div></header>{error && <p role="alert">{error}</p>}{message && <p role="status">{message}</p>}
+    <form className="st-card st-project-form" onSubmit={add}><h2>Add certification</h2><input required placeholder="Certification title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /><input placeholder="Issuer" value={form.issuer} onChange={(e) => setForm({ ...form, issuer: e.target.value })} /><label>Issue date<input type="date" value={form.issue_date} onChange={(e) => setForm({ ...form, issue_date: e.target.value })} /></label><input type="url" placeholder="Credential URL" value={form.credential_url} onChange={(e) => setForm({ ...form, credential_url: e.target.value })} /><button className="st-primary-btn" disabled={busy}>{busy ? "Saving…" : "Save certification"}</button></form>
+    <div className="st-card">{items.length ? items.map((item) => <article className="st-history-item" key={item.id}><strong>{item.title}</strong><p>{item.issuer || "Issuer not specified"} · {item.issue_date || "Date not specified"}</p>{item.credential_url && <a href={item.credential_url} target="_blank" rel="noreferrer">Credential</a>} <button className="st-delete-btn" onClick={() => remove(item.id)}>Remove</button></article>) : <p>No certifications saved yet.</p>}</div>
+  </section>;
+}

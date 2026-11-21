@@ -1,0 +1,36 @@
+# Environment variables
+.env
+.env.*
+!.env.example
+backend/.env
+frontend/my-application/.env
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Backend database
+backend/**/*.db
+
+# Uploads
+backend/uploads/
+
+# ML artifacts
+backend/app/ml/artifacts/
+
+# Testing
+backend/.pytest_cache/
+.pytest_cache/
+
+# Frontend
+frontend/my-application/node_modules/
+frontend/my-application/dist/
+
+# IDE
+.vscode/
+
+# System files
+.DS_Store
+Thumbs.db
